@@ -4,11 +4,14 @@ echo -e "Starting up ros_introduction container \n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 echo -e "This container will access to the users home directory and log in as the user with their password and x sever access.\nYou will not own the workspace though, use sudo chown -R $USER /dev_ws"
 echo -e "Source the workspace with source devel/setup.bash"
 
+IP=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
+
 docker run -it --privileged \
     --user=$(id -u $USER):$(id -g $USER) \
     --group-add sudo \
     --env="DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
+    --add-host=$(hostname)=$IP \
     --workdir="/dev_ws" \
     --volume="/home/$USER:/home/$USER" \
     --volume="/etc/group:/etc/group:ro" \

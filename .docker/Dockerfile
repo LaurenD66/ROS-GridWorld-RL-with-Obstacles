@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     python3-catkin-tools \
     python3-rosdep \
     python3-rosinstall-generator \
+    iputils-ping \
     ros-$ROS_DISTRO-rqt \
     ros-$ROS_DISTRO-rqt-common-plugins \
     ros-$ROS_DISTRO-rqt-robot-plugins \
