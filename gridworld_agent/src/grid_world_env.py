@@ -2,6 +2,8 @@ import gymnasium as gym
 import numpy as np
 import pygame
 import random
+import imageio
+import yaml
 from pyvirtualdisplay import Display
 
 display = Display(visible=0, size=(600, 600))
@@ -21,7 +23,7 @@ class GridWorldEnv(gym.Env):
         self.agent_pos = [0, 0]
         self.goal_cells = [(grid_size - 1, 4), (grid_size - 1, 5)]
         self.grid = np.zeros((grid_size, grid_size), dtype=np.uint8)
-
+        self.frames = []
         pygame.init()
         self.cell_size = 50
         self.window_size = grid_size * self.cell_size
@@ -102,8 +104,8 @@ class GridWorldEnv(gym.Env):
         return self.grid.copy(), reward, done, False, {"moved": moved}
 
     def render(self):
-        if self.render_mode == "human":
-            return
+        return
+    if self.render_mode == "human":
         self.screen.fill((0, 0, 0))
         for i in range(self.grid_size):
             for j in range(self.grid_size):
@@ -118,3 +120,7 @@ class GridWorldEnv(gym.Env):
         pygame.display.flip()
         self.clock.tick(10)
 
+ # Save frame as an image array
+        frame = pygame.surfarray.array3d(pygame.display.get_surface())
+        frame = frame.swapaxes(0, 1)  # Convert from (width, height) to (height, width)
+        self.frames.append(frame)

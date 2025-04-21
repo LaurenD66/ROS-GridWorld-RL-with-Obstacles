@@ -9,24 +9,27 @@ Construction environments can be chaotic, making robotic automation difficult. T
 
 Ensure your workspace structure is as follows:
 ```
-dev_ws/
-└── src/
-    └── gridworld_agent/
-        ├── scripts/ 
-        │   └── node_01.py
-        ├── src/
-        │   ├── __init__.py
-        │   ├── grid_world_env.py
-        │   ├── obstacle_clustering.py
-        │   ├── moving_obstacles.py
-        │   ├── reward_shaping.py
-        │   └── training_utils.py
-        ├── package.xml
-        └── CMakeLists.txt
+ros_obstacles/
+├── src/
+│   ├── node_01.py                # Main ROS node for training/testing
+│   ├── grid_world_env.py         # Grid world environment using OpenAI Gym interface
+│   ├── training_utils.py         # Q-learning implementation
+│   ├── reward_shaping.py         # Reward shaping logic
+│   ├── obstacle_clustering.py    # Obstacle clustering logic
+│   ├── moving_obstacles.py       # Moving obstacles logic
+│   ├── __init__.py
+├── images/                       # Contains generated evaluation GIFs
+│   └── evaluation.gif
+├── package.xml                   # ROS package metadata
+├── CMakeLists.txt                # ROS build configuration
+└── README.md
 ```
-Fork / clone grid_world_env.py from https://github.com/michelecobelli/Reinforcement-Learning-for-Robotic-Pick-and-Place.
 
-### Step 2: Create Docker Environment 
+### Step 2: Set basis of agent - obstacle environment
+
+(1) Fork / clone grid_world_env.py from https://github.com/michelecobelli/Reinforcement-Learning-for-Robotic-Pick-and-Place for training.
+
+### Step 3: Create Docker Environment 
 
 Fork / Clone from https://github.com/MRAC-IAAC/ros-introduction to set up a virtual Docker environment.
 
@@ -36,30 +39,11 @@ Prior to building the docker in the terminal,
 
     (2) add all relevant libraries (rospy, gymnasium, pygame, etc.) to the Dockerfile.
 
+### Step 4: Train your RL Agent
+
 ```bash
+
 ros_obstacles/gridworld_agent/scripts/chmod +x node_01.py
-
-...or... 
-
-    Build your Docker image with necessary dependencies:
-    ```bash
-    docker build -t ros_gridworld .
-    ```
-
-    Run and enter the Docker container environment:
-    ```bash
-    docker run -it --rm ros_gridworld bash
-    ```
-
-    Inside Docker, build and source your ROS workspace:
-    ```bash
-    source /opt/ros/noetic/setup.bash
-    cd /dev_ws
-    catkin build
-    source devel/setup.bash
-    ```
-
-### Step 3: Train your RL Agent
 
 Inside the container shell, initiate training:
 ```bash
@@ -71,7 +55,7 @@ This will:
 - Select the original environment variant
 - Save the trained Q-table (`q_table.yaml`)
 
-### Step 4: Evaluate/Test your RL Agent
+### Step 5: Evaluate/Test your RL Agent
 
 After training, evaluate the trained agent:
 ```bash
@@ -79,11 +63,15 @@ rosrun gridworld_agent node_01.py _train_mode:=false _env_variant:=original
 ```
 
 This will:
-- Load the saved Q-table (`q_table.yaml`)
+- Load the saved Q-table (`q_table.yaml`) and generate a .gif showing the trained behavior as imates/evaluation.gif.
 - Evaluate the agent's performance
 - Output the path taken by the agent
 
-### Step 5: Experiment with Environment Variants 
+## Preview
+
+![Agent Evaluation](images/evaluation.gif)
+
+### Step 6: Experiment with Environment Variants 
 
 You can test different environment configurations:
 - Clustered obstacles: `_env_variant:=clustered`
@@ -95,21 +83,22 @@ Example:
 rosrun gridworld_agent node_01.py _train_mode:=false _env_variant:=moving
 ```
 
-### Step 6: Results and Visualization 
+### Step 7: Results and Visualization 
 
 Use provided utilities in `training_utils.py` to:
 - Generate videos of agent performance
 - Analyze evaluation paths and results
+- View the evaluation path as a sequence of frames showing the agent's movements.
+
 
 ---
 
 ## Common Issues
 
+
 Downloading gymnasium-1.1.1-py3-none.any.whl
     - **ERROR: Could not find a version that satisfied the requirement rospy (from versions: none).
     - **ERROR: No matching distribution found for rospy
-
-    These errors represent an incompatability between ROS1 and gymnasium.  While these files were RUN in the Docker added to the Dockerfile, they were not recognized when the docker was built and the development workspace was run in the ROS terminator.
 
 ---
 
@@ -130,9 +119,20 @@ rosrun gridworld_agent node_01.py _train_mode:=true _env_variant:=original
 # Evaluate agent
 rosrun gridworld_agent node_01.py _train_mode:=false _env_variant:=original
 ```
+![Gridworld Example](images/sample_output.png)
 
 ---
 
 ## Conclusion
 
-This structured guide is intended to train, evaluated, and experiment with reinforcement learning agents using ROS, Gymnasium, and Docker.  The # ROS-GridWorld-RL-Obstacles
+This structured guide is intended to train, evaluated, and experiment with reinforcement learning agents using ROS, Gymnasium, and Docker. 
+This project demonstrates the integration of reinforcement learning with a custom grid world environment inside the ROS ecosystem. By modularizing obstacle behavior and reward shaping, the system supports testing a wide range of environmental conditions. The use of Docker ensures reproducibility across systems, and the addition of GIF output makes it easier to visualize and evaluate agent behavior. This foundation can be expanded further into more complex environments, additional learning algorithms, or integration with real-world robotics simulations,
+
+## Acknowledgements
+
+    Creation of GitHub template: Marita Georganta - Robotic Sensing Expert
+    Creation of MRAC-IAAC GitHub Structure: Huanyu Li - Robotic Researcher
+
+## License
+
+MIT License © LaurenD66

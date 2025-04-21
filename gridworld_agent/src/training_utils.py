@@ -37,7 +37,8 @@ class QLearningAgent:
 
             self.rewards_per_episode.append(total_reward)
 
-    def evaluate(self, num_episodes=1):
+    def evaluate(self, num_episodes=1, gif_name="evaluation.gif"):
+        self.env.render_mode = "human"
         all_positions = []
         for _ in range(num_episodes):
             self.env.reset()
@@ -49,8 +50,16 @@ class QLearningAgent:
                 action = np.argmax(self.q_table[x, y])
                 _, _, done, _, _ = self.env.step(action)
                 path.append((x, y))
+                self.env.render()
 
             all_positions.append(path)
+
+        # Save GIF from frames
+        if hasattr(self.env, "frames") and self.env.frames:
+            gif_path = os.path.join("images", gif_name)
+            imageio.mimsave(gif_name, self.env.frames, fps=5)
+            print(f"GIF saved to {gif_path}")
+
         return all_positions
 
     def load(self, path="q_table.yaml"):
